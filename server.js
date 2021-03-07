@@ -3,7 +3,7 @@ const express = require("express");
 const PORT = 3001;
 const app = express();
 
-const phonebookEntries = [
+let phonebookEntries = [
 	{ id: 1, name: "Arto Hellas", number: "040-123456" },
 	{ id: 2, name: "Ada Lovelace", number: "349-1234-1564" },
 	{ id: 3, name: "Izhak Dadashev", number: "050-1235851" },
@@ -34,6 +34,21 @@ app.get("/api/persons/:id", (req, res) => {
 
 	if (foundEntry) {
 		res.status(200).json(foundEntry);
+	} else {
+		res.status(404).end();
+	}
+});
+
+// DELETE route to /api/persons/:id deletes an entry by id
+app.delete("/api/persons/:id", (req, res) => {
+	const { id } = req.params;
+	console.log(typeof id);
+	const lengthBeforeAttemptedDeletion = phonebookEntries.length;
+
+	phonebookEntries = phonebookEntries.filter((entry) => entry.id !== +id);
+
+	if (lengthBeforeAttemptedDeletion === phonebookEntries.length + 1) {
+		res.status(204).end();
 	} else {
 		res.status(404).end();
 	}
