@@ -44,11 +44,15 @@ app.post("/api/persons", (req, res) => {
 	const randomNewId = getRandomInt(10, 1000000);
 
 	if (!req.body.name) {
-		return res.send("Entry must have a name!");
+		return res.json({ error: "Entry must have a name!" });
 	}
 
 	if (!req.body.number) {
-		return res.send("Entry must have a phone number!");
+		return res.json({ error: "Entry must have a phone number!" });
+	}
+
+	if (phonebookEntries.map((entry) => entry.name).includes(req.body.name)) {
+		return res.json({ error: "That name already exists!" });
 	}
 
 	const newEntry = { id: randomNewId, name: req.body.name, number: req.body.number };
