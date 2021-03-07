@@ -17,6 +17,15 @@ app.get("/api/persons", (req, res) => {
 	res.status(200).json(phonebookEntries);
 });
 
+// GET route to /info returns info about the phonebook
+app.get("/info", (req, res) => {
+	const responseString = `<strong style="color:blue;">Phonebook has info for ${
+		phonebookEntries.length
+	} people.<br /> ${new Date()}</strong>`;
+
+	res.status(200).send(responseString);
+});
+
 app.listen(() => {
 	app.listen(PORT, () => {
 		console.log(`Listening on port ${PORT}`);
