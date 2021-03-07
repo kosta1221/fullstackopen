@@ -26,6 +26,19 @@ app.get("/info", (req, res) => {
 	res.status(200).send(responseString);
 });
 
+// GET route to /api/persons/:id returns info about the person with that id
+app.get("/api/persons/:id", (req, res) => {
+	const { id } = req.params;
+
+	const foundEntry = phonebookEntries.find((entry) => entry.id === +id);
+
+	if (foundEntry) {
+		res.status(200).json(foundEntry);
+	} else {
+		res.status(404).end();
+	}
+});
+
 app.listen(() => {
 	app.listen(PORT, () => {
 		console.log(`Listening on port ${PORT}`);
