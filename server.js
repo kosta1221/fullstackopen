@@ -1,4 +1,5 @@
 const express = require("express");
+const morgan = require("morgan");
 
 const PORT = 3001;
 const app = express();
@@ -10,6 +11,7 @@ let phonebookEntries = [
 	{ id: 4, name: "Bojack Horseman", number: "054-6594300" },
 ];
 
+app.use(morgan("tiny"));
 app.use(express.json());
 
 // returns a hardcoded list of phonebook entries from /api/persons
@@ -44,14 +46,17 @@ app.post("/api/persons", (req, res) => {
 	const randomNewId = getRandomInt(10, 1000000);
 
 	if (!req.body.name) {
+		console.log("error: Entry must have a name!");
 		return res.json({ error: "Entry must have a name!" });
 	}
 
 	if (!req.body.number) {
+		console.log("error: Entry must have a phone number!");
 		return res.json({ error: "Entry must have a phone number!" });
 	}
 
 	if (phonebookEntries.map((entry) => entry.name).includes(req.body.name)) {
+		console.log("error: That name already exists!");
 		return res.json({ error: "That name already exists!" });
 	}
 
