@@ -39,6 +39,24 @@ app.get("/api/persons/:id", (req, res) => {
 	}
 });
 
+// POST route to /api/persons adds a new entry
+app.post("/api/persons", (req, res) => {
+	const randomNewId = getRandomInt(10, 1000000);
+
+	if (!req.body.name) {
+		return res.send("Entry must have a name!");
+	}
+
+	if (!req.body.number) {
+		return res.send("Entry must have a phone number!");
+	}
+
+	const newEntry = { id: randomNewId, name: req.body.name, number: req.body.number };
+	phonebookEntries.push(newEntry);
+	console.log(`Created new entry with id ${newEntry.id}`);
+	res.json(newEntry);
+});
+
 // DELETE route to /api/persons/:id deletes an entry by id
 app.delete("/api/persons/:id", (req, res) => {
 	const { id } = req.params;
@@ -53,6 +71,12 @@ app.delete("/api/persons/:id", (req, res) => {
 		res.status(404).end();
 	}
 });
+
+function getRandomInt(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 app.listen(() => {
 	app.listen(PORT, () => {
