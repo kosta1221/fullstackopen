@@ -11,7 +11,11 @@ let phonebookEntries = [
 	{ id: 4, name: "Bojack Horseman", number: "054-6594300" },
 ];
 
-app.use(morgan("tiny"));
+morgan.token("person", (req) => {
+	return JSON.stringify({ name: req.body.name, number: req.body.number });
+});
+
+app.use(morgan(":method :url :status :res[content-length] - :response-time ms :person"));
 app.use(express.json());
 
 // returns a hardcoded list of phonebook entries from /api/persons
