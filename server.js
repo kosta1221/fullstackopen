@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const PORT = process.env.PORT || 3001;
 const app = express();
 
+// Hard coded phone book entries
 let phonebookEntries = [
 	{ id: 1, name: "Arto Hellas", number: "040-123456" },
 	{ id: 2, name: "Ada Lovelace", number: "349-1234-1564" },
