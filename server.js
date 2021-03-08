@@ -12,10 +12,13 @@ let phonebookEntries = [
 ];
 
 morgan.token("person", (req) => {
-	return JSON.stringify({ name: req.body.name, number: req.body.number });
+	return JSON.stringify(req.body);
 });
 
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms :person"));
+
+app.use(express.static("./client/build"));
+
 app.use(express.json());
 
 // returns a hardcoded list of phonebook entries from /api/persons
