@@ -1,16 +1,9 @@
+require("dotenv").config({ path: __dirname + "/uri.env" });
 const express = require("express");
 const morgan = require("morgan");
-
+const Entry = require("./models/Entry");
 const PORT = process.env.PORT || 3001;
 const app = express();
-
-// Hard coded phone book entries
-let phonebookEntries = [
-	{ id: 1, name: "Arto Hellas", number: "040-123456" },
-	{ id: 2, name: "Ada Lovelace", number: "349-1234-1564" },
-	{ id: 3, name: "Izhak Dadashev", number: "050-1235851" },
-	{ id: 4, name: "Bojack Horseman", number: "054-6594300" },
-];
 
 morgan.token("person", (req) => {
 	return JSON.stringify(req.body);
@@ -24,7 +17,9 @@ app.use(express.json());
 
 // returns a hardcoded list of phonebook entries from /api/persons
 app.get("/api/persons", (req, res) => {
-	res.status(200).json(phonebookEntries);
+	Entry.find({}).then((entries) => {
+		res.status(200).json(entries);
+	});
 });
 
 // GET route to /info returns info about the phonebook
@@ -40,19 +35,19 @@ app.get("/info", (req, res) => {
 app.get("/api/persons/:id", (req, res) => {
 	const { id } = req.params;
 
-	const foundEntry = phonebookEntries.find((entry) => entry.id === +id);
+	Entry.findById(id).then((note) => {
+		res.json(note);
+	});
 
-	if (foundEntry) {
+	/* if (foundEntry) {
 		res.status(200).json(foundEntry);
 	} else {
 		res.status(404).end();
-	}
+	} */
 });
 
 // POST route to /api/persons adds a new entry
 app.post("/api/persons", (req, res) => {
-	const randomNewId = getRandomInt(10, 1000000);
-
 	if (!req.body.name) {
 		console.log("error: Entry must have a name!");
 		return res.json({ error: "Entry must have a name!" });
@@ -63,15 +58,15 @@ app.post("/api/persons", (req, res) => {
 		return res.json({ error: "Entry must have a phone number!" });
 	}
 
-	if (phonebookEntries.map((entry) => entry.name).includes(req.body.name)) {
+	/* if (phonebookEntries.map((entry) => entry.name).includes(req.body.name)) {
 		console.log("error: That name already exists!");
 		return res.json({ error: "That name already exists!" });
-	}
+	} */
 
-	const newEntry = { id: randomNewId, name: req.body.name, number: req.body.number };
-	phonebookEntries.push(newEntry);
-	console.log(`Created new entry with id ${newEntry.id}`);
-	res.json(newEntry);
+	const newEntry = new Entry({ name: req.body.name, number: req.body.number });
+	newEntry.save().then((savedEntry) => {
+		res.json(savedEntry);
+	});
 });
 
 // DELETE route to /api/persons/:id deletes an entry by id
