@@ -2,6 +2,7 @@ require("dotenv").config({ path: __dirname + "/uri.env" });
 const express = require("express");
 const morgan = require("morgan");
 const Entry = require("./models/Entry");
+
 const PORT = process.env.PORT || 3001;
 const app = express();
 
@@ -47,21 +48,14 @@ app.get("/api/persons/:id", (req, res, next) => {
 });
 
 // POST route to /api/persons adds a new entry
-app.post("/api/persons", (req, res) => {
-	if (!req.body.name) {
-		console.log("error: Entry must have a name!");
-		return res.json({ error: "Entry must have a name!" });
-	}
-
-	if (!req.body.number) {
-		console.log("error: Entry must have a phone number!");
-		return res.json({ error: "Entry must have a phone number!" });
-	}
-
+app.post("/api/persons", (req, res, next) => {
 	const newEntry = new Entry({ name: req.body.name, number: req.body.number });
-	newEntry.save().then((savedEntry) => {
-		res.json(savedEntry);
-	});
+	newEntry
+		.save()
+		.then((savedEntry) => {
+			res.json(savedEntry.toJSON());
+		})
+		.catch((error) => next(error));
 });
 
 // PUT route to /api/persons/:id updates an existing entry's number
@@ -100,6 +94,8 @@ const errorHandler = (error, request, response, next) => {
 
 	if (error.name === "CastError") {
 		return response.status(400).send({ error: "invalid id format!" });
+	} else if (error.name === "ValidationError") {
+		return response.status(400).json({ error: error.message });
 	}
 
 	next(error);
