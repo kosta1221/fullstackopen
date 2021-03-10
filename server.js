@@ -24,11 +24,11 @@ app.get("/api/persons", (req, res) => {
 
 // GET route to /info returns info about the phonebook
 app.get("/info", (req, res) => {
-	const responseString = `<strong style="color:blue;">Phonebook has info for ${
-		phonebookEntries.length
-	} people.<br /> ${new Date()}</strong>`;
+	Entry.estimatedDocumentCount().then((result) => {
+		const responseString = `<strong style="color:blue;">Phonebook has info for ${result} people.<br /> ${new Date()}</strong>`;
 
-	res.status(200).send(responseString);
+		res.status(200).send(responseString);
+	});
 });
 
 // GET route to /api/persons/:id returns info about the person with that id
@@ -64,13 +64,26 @@ app.post("/api/persons", (req, res) => {
 	});
 });
 
+// PUT route to /api/persons/:id updates an existing entry's number
+app.put("/api/persons/:id", (request, response, next) => {
+	const body = request.body;
+
+	const entry = { number: body.number };
+
+	Entry.findByIdAndUpdate(request.params.id, entry, { new: true })
+		.then((updatedEntry) => {
+			response.json(updatedEntry);
+		})
+		.catch((error) => next(error));
+});
+
 // DELETE route to /api/persons/:id deletes an entry by id
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res, next) => {
 	const { id } = req.params;
 
-	Note.findByIdAndRemove(id)
+	Entry.findByIdAndRemove(id)
 		.then((result) => {
-			response.status(204).end();
+			res.status(204).end();
 		})
 		.catch((error) => next(error));
 });
