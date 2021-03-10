@@ -12,7 +12,7 @@ mongoose
 		useFindAndModify: false,
 		useCreateIndex: true,
 	})
-	.then((result) => {
+	.then(() => {
 		console.log("connected to MongoDB");
 	})
 	.catch((error) => {
@@ -22,12 +22,13 @@ mongoose
 const entrySchema = new mongoose.Schema({
 	name: {
 		type: String,
-		minLength: 2,
+		minLength: 3,
 		unique: true,
 		required: true,
 	},
 	number: {
 		type: String,
+		minLength: 8,
 		required: true,
 	},
 });
